@@ -10,13 +10,7 @@ const NodeType = {
   ACTION: 'action'
 };
 
-const isKnownNodeType = type => {
-  return Object.values(NodeType).includes(type);
-};
-
-
 export {
   CompletionStatus,
-  NodeType,
-  isKnownNodeType
+  NodeType
 }
