@@ -1,7 +1,7 @@
 const CompletionStatus = {
   SUCCESS: 'success',
   FAILURE: 'failure',
-  PENDING: 'pending'
+  RUNNING: 'running'
 };
 
 const NodeType = {

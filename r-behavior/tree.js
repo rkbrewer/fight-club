@@ -95,7 +95,6 @@ class Tree {
         throw new Error('Invalid action. "action.handler" must either be a function or an object defining an init and update function.');
     }
 
-    // console.log('Registering action', action);
     this.#actions.set(action.name, action);
   };
 
@@ -126,25 +125,25 @@ class Tree {
 
     // Recursively invokes "tick" on children until the status
     // is not the one provided this fn.
-    // Mutates the returned variable "status"
-    const tickChildrenUntilNot = (s) => {
-      status = s;
+    const tickChildrenWhile = s => {
+      let result = s;
       for (const child of node.children) {
-        const result = this.tick(ctx, agent, child);
-        if (result !== s) {
-          status = result;
+        const r = this.tick(ctx, agent, child);
+        if (r !== s) {
+          result = r;
           break;
         }
       }
+      return result;
     };
 
     switch(node.type) {
       case NodeType.SELECTOR:
-        tickChildrenUntilNot(CompletionStatus.FAILURE);
+        status = tickChildrenWhile(CompletionStatus.FAILURE);
         break;
 
       case NodeType.SEQUENCE:
-        tickChildrenUntilNot(CompletionStatus.SUCCESS);
+        status = tickChildrenWhile(CompletionStatus.SUCCESS);
         break;
 
       case NodeType.ACTION:
@@ -161,12 +160,7 @@ class Tree {
           init(ctx, agent.state, agent.getNodeState(node.id));
         }
 
-        try {
-          status = update(ctx, agent.state, agent.getNodeState(node.id));
-        } catch(e) {
-          debugger;
-        }
-
+        status = update(ctx, agent.state, agent.getNodeState(node.id));
 
         if (status === CompletionStatus.RUNNING) {
           agent.runningNode = node;
